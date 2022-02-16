@@ -1,6 +1,11 @@
 import React from 'react'
 
 function Message({formData, setFormData}) {
+  const handleInputChange = e => {
+    const {name, value} = e.target;
+    console.log(name, value);
+    setFormData({ ...formData, choiceOne: value })
+  }
   return (
     <div className='message-container'>
       <div className='message-in'>
@@ -9,11 +14,11 @@ function Message({formData, setFormData}) {
       </div>
       <div className='message-radio'  >
         <input type="radio" id="choice1"
-          name="contact"/>
+          name="contact" value="1" onChange={handleInputChange}/>
         <label for="choice1">Number one</label>
 
         <input type="radio" id="choice2"
-          name="contact" />
+          name="contact" value="2" onChange={handleInputChange}/>
         <label for="choice2">Number two</label>
       </div>
     </div>

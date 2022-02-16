@@ -27,18 +27,16 @@ function Form() {
     function getEmails(formData) {
         const dbRef = ref(getDatabase());
         get(child(dbRef, `users/`)).then((snapshot) => {
+            var emails = [];
+            const data = snapshot.val();
             if (snapshot.exists()) {
-                var emails = [];
-                const data = snapshot.val();
                 const keys = Object.keys(data);
                 keys.forEach(function (key) {
                     emails.push(data[key].email);
                 });
-                console.log(emails);
-                submitData(formData, emails);
-            } else {
-                console.log("No data available");
-            }
+        }
+            console.log(emails);
+            submitData(formData, emails);
         }).catch((error) => {
             console.error(error);
         });
