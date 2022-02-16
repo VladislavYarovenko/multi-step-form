@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 import Checkbox from './Checkbox';
 import SignUp from './SignUp';
 import Message from './Message';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
+// import Stepper from '@mui/material/Stepper';
+// import Step from '@mui/material/Step';
+// import StepLabel from '@mui/material/StepLabel';
 import app from "./firebase";
-import { getDatabase, ref, push, onValue, query, limitToLast } from "firebase/database";
+import { getDatabase, ref, push, onValue, get, child } from "firebase/database";
 
 function Form() {
     const [page, setPage] = useState(0);
     const FormTitles = ["Sign Up", "Message", "Checkbox"];
-    var userID = "userID";
     const db = getDatabase(app);
     const [formData, setFormData] = useState({
         firstName: "",
@@ -24,24 +23,31 @@ function Form() {
         choiceTwo: "",
         choiceThree: "",
     });
-            
+
     function getEmails(formData) {
-        const emailRef = ref(db, 'users/');
-        const emails = [];
-        onValue(emailRef, (snapshot) => {
-            const data = snapshot.val();
-            const keys = Object.keys(data);
-            keys.forEach(function (key) {
-                emails.push(data[key].email);
-            });
+        const dbRef = ref(getDatabase());
+        get(child(dbRef, `users/`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                var emails = [];
+                const data = snapshot.val();
+                const keys = Object.keys(data);
+                keys.forEach(function (key) {
+                    emails.push(data[key].email);
+                });
+                console.log(emails);
+                submitData(formData, emails);
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
         });
-        console.log(emails);
-        submitData(formData, emails);
-    };
-        
+    }
+
     function submitData(formData, emails) {
-        if (emails.includes(formData.email)) {
-            alert('This email is already taken!');
+        if (emails.includes(formData.email) === true) {
+            alert("This email is already taken!");
+
         } else {
             push(ref(db, 'users/'), {
                 firstName: formData.firstName,
@@ -72,19 +78,14 @@ function Form() {
         <div className="form">
 
             <div className="form-container">
+
                 <div className='form-container2'>
-                    <div className='progress'>
-                        <Stepper activeStep={page}>
-                            {FormTitles.map((label, index) => {
-                                const stepProps = {};
-                                const labelProps = {};
-                                return (
-                                    <Step key={label} {...stepProps}>
-                                        <StepLabel {...labelProps}>{label}</StepLabel>
-                                    </Step>
-                                );
-                            })}
-                        </Stepper>
+                    <div className="progressbar">
+                        <h2>1. SignUp 2. Message 3. Checkbox</h2>
+                        <div
+
+                            style={{ width: page === 0 ? "33.3%" : page === 1 ? "66.6%" : "100%" }}
+                        ></div>
                     </div>
                     <div className="header"><h1>{FormTitles[page]}</h1></div>
                     <div className="body">{pageDisplay()}</div>
@@ -100,7 +101,6 @@ function Form() {
                         {page === 2 && <button onClick={() => { getEmails(formData) }}>Submit</button>}
                     </div>
                 </div>
-
             </div>
         </div>
     )

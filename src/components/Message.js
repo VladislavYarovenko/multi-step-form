@@ -7,7 +7,7 @@ function Message({formData, setFormData}) {
         <label for="message">Message</label>
         <textarea name="message" type="text" value={formData.message} onChange={(event) => setFormData({...formData, message :event.target.value})}/>
       </div>
-      <div className='message-radio' value={formData.choiceOne} onChange={(event) => setFormData({...formData, choiceOne :event.target.value})} >
+      <div className='message-radio'  >
         <input type="radio" id="choice1"
           name="contact"/>
         <label for="choice1">Number one</label>
