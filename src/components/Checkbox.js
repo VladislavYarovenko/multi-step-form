@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Checkbox() {
+function Checkbox({formData, setFormData}) {
   return (
     <div className='checkbox-container'>
       <div className='image-radio'>

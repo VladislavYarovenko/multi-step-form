@@ -1,51 +1,27 @@
-import React, { useState, Component } from 'react'
-import db from "./firebase";
-import { ref, set } from "firebase/database";
+import React from 'react'
 
 
-function SignUp() {
+function SignUp({formData, setFormData}) {
 
-    const [fName, setfName] = useState('FirstName');
-    const [lName, setlName] = useState('LastName');
-
-    function writeUserData(fName, lName) {
-        set(ref(db, 'users/'), {
-          FirstName: fName,
-          LastName: lName,
-        });
-      }
-
-      const handleChange = (e) => {
-        setfName(e.target.value);
-      };
-      const createName = (event) => {
-        event.preventDefault();
-        const nameRef = db().ref("Name");
-        const name = {
-          fName,
-        };
-        nameRef.push(name);
-        setfName("");
-      };
 
     return (
         <div className='sign-up-container'>
             <div className='group'>
                 <label for="fName">First Name</label>
-                <input type="text" name="fName" onChange={handleChange}/>
+                <input type="text" name="fName" value={formData.firstName} onChange={(event) => setFormData({...formData, firstName: event.target.value})}/>
                 <label for="lName">Last Name</label>
-                <input type="text" name="lName"/>
+                <input type="text" name="lName" value={formData.lastName} onChange={(event) => setFormData({...formData, lastName: event.target.value})}/>
             </div>
             <div className='group'>
                 <label for="date">Date of Birth</label>
-                <input name="date" type="date" />
+                <input name="date" type="date"  value={formData.dateOfBirth} onChange={(event) => setFormData({...formData, dateOfBirth :event.target.value})}/>
                 <label for="mail">Email Address</label>
-                <input name="mail" type="email" />
+                <input name="mail" type="email" value={formData.email} onChange={(event) => setFormData({...formData, email :event.target.value})}/>
             </div>
             
             <div name="address" className='address'>
             <label for="address">Address</label>
-                <input name="address" type="text" />
+                <input name="address" type="text" value={formData.address} onChange={(event) => setFormData({...formData, address :event.target.value})}/>
             </div>
 
         </div>

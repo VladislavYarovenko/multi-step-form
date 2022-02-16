@@ -5,19 +5,66 @@ import Message from './Message';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import Typography from '@mui/material/Typography';
+import app from "./firebase";
+import { getDatabase, ref, push, onValue, query, limitToLast } from "firebase/database";
 
 function Form() {
     const [page, setPage] = useState(0);
     const FormTitles = ["Sign Up", "Message", "Checkbox"];
+    var userID = "userID";
+    const db = getDatabase(app);
+    const [formData, setFormData] = useState({
+        firstName: "",
+        lastName: "",
+        dateOfBirth: "",
+        email: "",
+        address: "",
+        message: "",
+        choiceOne: "",
+        choiceTwo: "",
+        choiceThree: "",
+    });
+            
+    function getEmails(formData) {
+        const emailRef = ref(db, 'users/');
+        const emails = [];
+        onValue(emailRef, (snapshot) => {
+            const data = snapshot.val();
+            const keys = Object.keys(data);
+            keys.forEach(function (key) {
+                emails.push(data[key].email);
+            });
+        });
+        console.log(emails);
+        submitData(formData, emails);
+    };
+        
+    function submitData(formData, emails) {
+        if (emails.includes(formData.email)) {
+            alert('This email is already taken!');
+        } else {
+            push(ref(db, 'users/'), {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                dateOfBirth: formData.dateOfBirth,
+                email: formData.email,
+                address: formData.address,
+                message: formData.message,
+                choiceOne: formData.choiceOne,
+                choiceTwo: formData.choiceTwo,
+                choiceThree: formData.choiceThree,
+            });
+        }
+
+    };
 
     const pageDisplay = () => {
         if (page === 0) {
-            return <SignUp />;
+            return <SignUp formData={formData} setFormData={setFormData} />;
         } else if (page === 1) {
-            return <Message />;
+            return <Message formData={formData} setFormData={setFormData} />;
         } else {
-            return <Checkbox />;
+            return <Checkbox formData={formData} setFormData={setFormData} />;
         }
     }
     return (
@@ -50,7 +97,7 @@ function Form() {
                             onClick={() => {
                                 setPage((currPage) => currPage + 1);
                             }}>Next Step</button>}
-                        {page === 2 && <button>Submit</button>}
+                        {page === 2 && <button onClick={() => { getEmails(formData) }}>Submit</button>}
                     </div>
                 </div>
 
